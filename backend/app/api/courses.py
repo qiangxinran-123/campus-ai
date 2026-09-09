@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
+from backend.app.schemas.course import Course, CourseListResponse, MaterialListResponse
+
 router = APIRouter(prefix="/api/courses", tags=["courses"])
 
 
@@ -45,7 +47,7 @@ MATERIALS = {
 }
 
 
-@router.get("")
+@router.get("", response_model=CourseListResponse)
 def list_courses():
     return {
         "count": len(COURSES),
@@ -53,7 +55,7 @@ def list_courses():
     }
 
 
-@router.get("/{course_id}")
+@router.get("/{course_id}", response_model=Course)
 def get_course(course_id: int):
     for course in COURSES:
         if course["id"] == course_id:
@@ -62,7 +64,7 @@ def get_course(course_id: int):
     raise HTTPException(status_code=404, detail="Course not found")
 
 
-@router.get("/{course_id}/materials")
+@router.get("/{course_id}/materials", response_model=MaterialListResponse)
 def list_course_materials(course_id: int):
     course_exists = any(course["id"] == course_id for course in COURSES)
 
