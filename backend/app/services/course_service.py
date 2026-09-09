@@ -112,3 +112,28 @@ def create_uploaded_material(course_id: int, filename: str, file_object):
         raise
 
     return new_material
+
+
+def _find_material(data: dict, material_id: int):
+    for materials in data["materials"].values():
+        for material in materials:
+            if material["id"] == material_id:
+                return material
+
+    return None
+
+
+def get_material_by_id(material_id: int):
+    data = load_course_data()
+    return _find_material(data, material_id)
+
+
+def update_material(material_id: int, updates: dict):
+    data = load_course_data()
+    material = _find_material(data, material_id)
+    if material is None:
+        return None
+
+    material.update(updates)
+    save_course_data(data)
+    return material

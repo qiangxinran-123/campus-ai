@@ -18,6 +18,10 @@ class Material(BaseModel):
     text_preview: str = ""
     text_length: int = 0
     extracted: bool = False
+    ai_summary: str | None = None
+    summary_generated: bool | None = None
+    summary_method: str | None = None
+    summary_updated_at: str | None = None
 
 
 class MaterialCreate(BaseModel):

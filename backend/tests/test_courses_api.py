@@ -136,6 +136,69 @@ class CoursesApiPersistenceTest(unittest.TestCase):
         materials = self._request("GET", "/api/courses/1/materials")
         self.assertEqual(materials["materials"][-1]["filename"], "slides.pdf")
         self.assertFalse(materials["materials"][-1]["extracted"])
+    def test_txt_material_can_generate_and_persist_mock_summary(self):
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "summary-notes.txt",
+            b"Cache memory improves average access time through locality and reuse.",
+            "text/plain",
+        )
+
+        summary = self._request("POST", f"/api/materials/{created['id']}/summary", {})
+
+        self.assertEqual(summary["id"], created["id"])
+        self.assertTrue(summary["summary_generated"])
+        self.assertEqual(summary["summary_method"], "mock")
+        self.assertTrue(summary["ai_summary"].startswith("Mock summary: "))
+        self.assertTrue(summary["summary_updated_at"])
+
+        saved_data = json.loads(self.data_file.read_text(encoding="utf-8"))
+        saved_material = saved_data["materials"]["1"][-1]
+        self.assertEqual(saved_material["ai_summary"], summary["ai_summary"])
+        self.assertEqual(saved_material["summary_method"], "mock")
+
+        materials = self._request("GET", "/api/courses/1/materials")
+        listed = next(item for item in materials["materials"] if item["id"] == created["id"])
+        self.assertEqual(listed["ai_summary"], summary["ai_summary"])
+        self.assertTrue(listed["summary_generated"])
+
+    def test_summary_for_unknown_material_returns_not_found(self):
+        status, response = self._request_with_error(
+            "POST",
+            "/api/materials/9999/summary",
+            {},
+        )
+
+        self.assertEqual(status, 404)
+        self.assertEqual(response["detail"], "Material not found")
+
+    def test_summary_without_text_returns_bad_request(self):
+        status, response = self._request_with_error(
+            "POST",
+            "/api/materials/101/summary",
+            {},
+        )
+
+        self.assertEqual(status, 400)
+        self.assertEqual(response["detail"], "Material has no text available for summary")
+
+    def test_repeated_summary_updates_existing_material_without_duplicates(self):
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "repeat-summary.txt",
+            b"Pipeline stages and hazards.",
+            "text/plain",
+        )
+        first = self._request("POST", f"/api/materials/{created['id']}/summary", {})
+        time.sleep(0.002)
+        second = self._request("POST", f"/api/materials/{created['id']}/summary", {})
+
+        materials = self._request("GET", "/api/courses/1/materials")
+        matching = [item for item in materials["materials"] if item["id"] == created["id"]]
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(materials["count"], 2)
+        self.assertEqual(second["id"], first["id"])
+        self.assertNotEqual(second["summary_updated_at"], first["summary_updated_at"])
     def test_upload_rejects_unsupported_file_type(self):
         status, response = self._multipart_request(
             "/api/courses/1/materials/upload",
@@ -183,6 +246,19 @@ class CoursesApiPersistenceTest(unittest.TestCase):
         with urlopen(request, timeout=5) as response:
             return json.loads(response.read().decode("utf-8"))
 
+    def _request_with_error(self, method, path, payload=None):
+        data = None
+        headers = {}
+        if payload is not None:
+            data = json.dumps(payload).encode("utf-8")
+            headers["Content-Type"] = "application/json"
+
+        request = Request(f"{self.base_url}{path}", data=data, headers=headers, method=method)
+        try:
+            with urlopen(request, timeout=5) as response:
+                return response.status, json.loads(response.read().decode("utf-8"))
+        except HTTPError as error:
+            return error.code, json.loads(error.read().decode("utf-8"))
     def _multipart_request(
         self,
         path,
