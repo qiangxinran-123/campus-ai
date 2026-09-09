@@ -1,0 +1,39 @@
+from fastapi import APIRouter
+
+from backend.app.core.config import APP_NAME, APP_VERSION
+
+router = APIRouter()
+
+
+@router.get("/")
+def root():
+    return {
+        "message": "Welcome to CampusAI API",
+        "app": APP_NAME,
+        "version": APP_VERSION,
+    }
+
+
+@router.get("/health")
+def health_check():
+    return {
+        "status": "ok",
+        "service": APP_NAME,
+    }
+
+
+@router.get("/api/project/status")
+def project_status():
+    return {
+        "project": APP_NAME,
+        "version": APP_VERSION,
+        "stage": "backend-basic-structure",
+        "progress": "18%",
+        "features": [
+            "FastAPI backend",
+            "basic routing",
+            "health check",
+            "project status API",
+        ],
+    }
+    
