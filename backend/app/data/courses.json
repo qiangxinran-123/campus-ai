@@ -1,0 +1,40 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "name": "Computer Organization",
+      "semester": "Junior Year",
+      "description": "Course materials and notes for computer organization."
+    },
+    {
+      "id": 2,
+      "name": "Machine Learning",
+      "semester": "Junior Year",
+      "description": "Basic machine learning concepts, assignments, and review notes."
+    }
+  ],
+  "materials": {
+    "1": [
+      {
+        "id": 101,
+        "title": "Cache Memory Notes",
+        "type": "note",
+        "summary": "Key ideas about cache hit, cache miss, and set associative cache."
+      },
+      {
+        "id": 102,
+        "title": "Pipeline Slides",
+        "type": "slide",
+        "summary": "Introduction to CPU pipeline stages and hazards."
+      }
+    ],
+    "2": [
+      {
+        "id": 201,
+        "title": "Linear Regression Notes",
+        "type": "note",
+        "summary": "Loss function, gradient descent, and model evaluation."
+      }
+    ]
+  }
+}

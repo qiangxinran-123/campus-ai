@@ -7,99 +7,57 @@ from backend.app.schemas.course import (
     MaterialCreate,
     MaterialListResponse,
 )
+from backend.app.services.course_service import (
+    create_material,
+    get_course,
+    list_courses as service_list_courses,
+    list_materials,
+)
 
 router = APIRouter(prefix="/api/courses", tags=["courses"])
 
 
-COURSES = [
-    {
-        "id": 1,
-        "name": "Computer Organization",
-        "semester": "Junior Year",
-        "description": "Course materials and notes for computer organization.",
-    },
-    {
-        "id": 2,
-        "name": "Machine Learning",
-        "semester": "Junior Year",
-        "description": "Basic machine learning concepts, assignments, and review notes.",
-    },
-]
-
-
-MATERIALS = {
-    1: [
-        {
-            "id": 101,
-            "title": "Cache Memory Notes",
-            "type": "note",
-            "summary": "Key ideas about cache hit, cache miss, and set associative cache.",
-        },
-        {
-            "id": 102,
-            "title": "Pipeline Slides",
-            "type": "slide",
-            "summary": "Introduction to CPU pipeline stages and hazards.",
-        },
-    ],
-    2: [
-        {
-            "id": 201,
-            "title": "Linear Regression Notes",
-            "type": "note",
-            "summary": "Loss function, gradient descent, and model evaluation.",
-        }
-    ],
-}
-
-
 @router.get("", response_model=CourseListResponse)
 def list_courses():
+    courses = service_list_courses()
+
     return {
-        "count": len(COURSES),
-        "courses": COURSES,
+        "count": len(courses),
+        "courses": courses,
     }
 
 
 @router.get("/{course_id}", response_model=Course)
-def get_course(course_id: int):
-    for course in COURSES:
-        if course["id"] == course_id:
-            return course
+def get_course_detail(course_id: int):
+    course = get_course(course_id)
 
-    raise HTTPException(status_code=404, detail="Course not found")
+    if course is None:
+        raise HTTPException(status_code=404, detail="Course not found")
+
+    return course
 
 
 @router.get("/{course_id}/materials", response_model=MaterialListResponse)
 def list_course_materials(course_id: int):
-    course_exists = any(course["id"] == course_id for course in COURSES)
+    course = get_course(course_id)
 
-    if not course_exists:
+    if course is None:
         raise HTTPException(status_code=404, detail="Course not found")
+
+    materials = list_materials(course_id)
 
     return {
         "course_id": course_id,
-        "count": len(MATERIALS.get(course_id, [])),
-        "materials": MATERIALS.get(course_id, []),
+        "count": len(materials),
+        "materials": materials,
     }
+
 
 @router.post("/{course_id}/materials", response_model=Material, status_code=201)
 def create_course_material(course_id: int, material: MaterialCreate):
-    course_exists = any(course["id"] == course_id for course in COURSES)
+    course = get_course(course_id)
 
-    if not course_exists:
+    if course is None:
         raise HTTPException(status_code=404, detail="Course not found")
 
-    course_materials = MATERIALS.setdefault(course_id, [])
-    next_id = max((item["id"] for item in course_materials), default=course_id * 100) + 1
-
-    new_material = {
-        "id": next_id,
-        "title": material.title,
-        "type": material.type,
-        "summary": material.summary,
-    }
-
-    course_materials.append(new_material)
-
-    return new_material
+    return create_material(course_id, material)
