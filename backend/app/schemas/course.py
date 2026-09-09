@@ -15,6 +15,12 @@ class Material(BaseModel):
     summary: str
 
 
+class MaterialCreate(BaseModel):
+    title: str
+    type: str
+    summary: str
+
+
 class CourseListResponse(BaseModel):
     count: int
     courses: list[Course]

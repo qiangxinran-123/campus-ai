@@ -1,6 +1,12 @@
 from fastapi import APIRouter, HTTPException
 
-from backend.app.schemas.course import Course, CourseListResponse, MaterialListResponse
+from backend.app.schemas.course import (
+    Course,
+    CourseListResponse,
+    Material,
+    MaterialCreate,
+    MaterialListResponse,
+)
 
 router = APIRouter(prefix="/api/courses", tags=["courses"])
 
@@ -76,3 +82,24 @@ def list_course_materials(course_id: int):
         "count": len(MATERIALS.get(course_id, [])),
         "materials": MATERIALS.get(course_id, []),
     }
+
+@router.post("/{course_id}/materials", response_model=Material, status_code=201)
+def create_course_material(course_id: int, material: MaterialCreate):
+    course_exists = any(course["id"] == course_id for course in COURSES)
+
+    if not course_exists:
+        raise HTTPException(status_code=404, detail="Course not found")
+
+    course_materials = MATERIALS.setdefault(course_id, [])
+    next_id = max((item["id"] for item in course_materials), default=course_id * 100) + 1
+
+    new_material = {
+        "id": next_id,
+        "title": material.title,
+        "type": material.type,
+        "summary": material.summary,
+    }
+
+    course_materials.append(new_material)
+
+    return new_material
