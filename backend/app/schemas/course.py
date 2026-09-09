@@ -15,6 +15,9 @@ class Material(BaseModel):
     summary: str
     filename: str | None = None
     file_path: str | None = None
+    text_preview: str = ""
+    text_length: int = 0
+    extracted: bool = False
 
 
 class MaterialCreate(BaseModel):

@@ -5,6 +5,8 @@ import shutil
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from backend.app.services.text_extraction_service import extract_text_from_file
+
 
 DEFAULT_DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "courses.json"
 DATA_FILE = Path(os.getenv("CAMPUSAI_COURSE_DATA_FILE", DEFAULT_DATA_FILE))
@@ -92,6 +94,7 @@ def create_uploaded_material(course_id: int, filename: str, file_object):
     with destination.open("wb") as output_file:
         shutil.copyfileobj(file_object, output_file)
 
+    extracted_text = extract_text_from_file(destination)
     new_material = {
         "id": next_id,
         "title": Path(safe_filename).stem,
@@ -99,6 +102,7 @@ def create_uploaded_material(course_id: int, filename: str, file_object):
         "summary": f"Uploaded course material: {safe_filename}",
         "filename": safe_filename,
         "file_path": str(destination),
+        **extracted_text,
     }
     course_materials.append(new_material)
     try:

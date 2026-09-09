@@ -95,6 +95,9 @@ class CoursesApiPersistenceTest(unittest.TestCase):
         self.assertEqual(created["id"], 102)
         self.assertEqual(created["filename"], "lecture-notes.txt")
         self.assertEqual(created["type"], "txt")
+        self.assertTrue(created["extracted"])
+        self.assertEqual(created["text_length"], len("Cache mapping and replacement policies."))
+        self.assertEqual(created["text_preview"], "Cache mapping and replacement policies.")
         saved_file = self.upload_dir / "course_1" / "lecture-notes.txt"
         self.assertEqual(saved_file.read_bytes(), b"Cache mapping and replacement policies.")
 
@@ -105,6 +108,34 @@ class CoursesApiPersistenceTest(unittest.TestCase):
         materials = self._request("GET", "/api/courses/1/materials")
         self.assertEqual(materials["materials"][-1], created)
 
+    def test_upload_md_file_extracts_text(self):
+        content = "# Machine Learning\n\nGradient descent and model evaluation."
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "review.md",
+            content.encode("utf-8"),
+            "text/markdown",
+        )
+
+        self.assertTrue(created["extracted"])
+        self.assertEqual(created["text_length"], len(content))
+        self.assertEqual(created["text_preview"], content)
+
+    def test_upload_pdf_file_succeeds_without_text_extraction(self):
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "slides.pdf",
+            b"%PDF-1.4 binary placeholder",
+            "application/pdf",
+        )
+
+        self.assertFalse(created["extracted"])
+        self.assertEqual(created["text_preview"], "")
+        self.assertEqual(created["text_length"], 0)
+
+        materials = self._request("GET", "/api/courses/1/materials")
+        self.assertEqual(materials["materials"][-1]["filename"], "slides.pdf")
+        self.assertFalse(materials["materials"][-1]["extracted"])
     def test_upload_rejects_unsupported_file_type(self):
         status, response = self._multipart_request(
             "/api/courses/1/materials/upload",

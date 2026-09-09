@@ -38,7 +38,7 @@ def get_course_detail(course_id: int):
     return course
 
 
-@router.get("/{course_id}/materials", response_model=MaterialListResponse, response_model_exclude_none=True)
+@router.get("/{course_id}/materials", response_model=MaterialListResponse, response_model_exclude_none=True, response_model_exclude_unset=True)
 def list_course_materials(course_id: int):
     course = get_course(course_id)
 
@@ -54,7 +54,7 @@ def list_course_materials(course_id: int):
     }
 
 
-@router.post("/{course_id}/materials", response_model=Material, response_model_exclude_none=True, status_code=201)
+@router.post("/{course_id}/materials", response_model=Material, response_model_exclude_none=True, response_model_exclude_unset=True, status_code=201)
 def create_course_material(course_id: int, material: MaterialCreate):
     course = get_course(course_id)
 
@@ -64,7 +64,7 @@ def create_course_material(course_id: int, material: MaterialCreate):
     return create_material(course_id, material)
 
 
-@router.post("/{course_id}/materials/upload", response_model=Material, response_model_exclude_none=True, status_code=201)
+@router.post("/{course_id}/materials/upload", response_model=Material, response_model_exclude_none=True, response_model_exclude_unset=True, status_code=201)
 def upload_course_material(course_id: int, file: UploadFile | None = File(None)):
     course = get_course(course_id)
 
