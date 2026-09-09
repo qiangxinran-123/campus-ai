@@ -13,6 +13,8 @@ class Material(BaseModel):
     title: str
     type: str
     summary: str
+    filename: str | None = None
+    file_path: str | None = None
 
 
 class MaterialCreate(BaseModel):

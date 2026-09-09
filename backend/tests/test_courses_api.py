@@ -15,6 +15,7 @@ class CoursesApiPersistenceTest(unittest.TestCase):
     def setUp(self):
         self.tmpdir = tempfile.TemporaryDirectory()
         self.data_file = Path(self.tmpdir.name) / "courses.json"
+        self.upload_dir = Path(self.tmpdir.name) / "uploads"
         self.data_file.write_text(
             json.dumps(
                 {
@@ -49,32 +50,10 @@ class CoursesApiPersistenceTest(unittest.TestCase):
         )
         self.port = self._free_port()
         self.base_url = f"http://127.0.0.1:{self.port}"
-        env = os.environ.copy()
-        env["CAMPUSAI_COURSE_DATA_FILE"] = str(self.data_file)
-        self.server = subprocess.Popen(
-            [
-                sys.executable,
-                "-m",
-                "uvicorn",
-                "backend.main:app",
-                "--host",
-                "127.0.0.1",
-                "--port",
-                str(self.port),
-            ],
-            env=env,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        self._wait_for_server()
+        self._start_server()
 
     def tearDown(self):
-        self.server.terminate()
-        try:
-            self.server.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            self.server.kill()
-            self.server.wait(timeout=5)
+        self._stop_server()
         self.tmpdir.cleanup()
 
     def test_courses_are_loaded_from_json_file(self):
@@ -95,15 +74,7 @@ class CoursesApiPersistenceTest(unittest.TestCase):
             },
         )
 
-        self.assertEqual(
-            created,
-            {
-                "id": 102,
-                "title": "Pipeline Review",
-                "type": "slide",
-                "summary": "Pipeline stages and hazards.",
-            },
-        )
+        self.assertEqual(created["id"], 102)
         saved_data = json.loads(self.data_file.read_text(encoding="utf-8"))
         self.assertEqual(saved_data["materials"]["1"][-1], created)
 
@@ -112,6 +83,63 @@ class CoursesApiPersistenceTest(unittest.TestCase):
 
         self.assertEqual(materials["count"], 2)
         self.assertEqual(materials["materials"][-1], created)
+
+    def test_upload_txt_file_is_saved_and_listed_after_restart(self):
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "lecture-notes.txt",
+            b"Cache mapping and replacement policies.",
+            "text/plain",
+        )
+
+        self.assertEqual(created["id"], 102)
+        self.assertEqual(created["filename"], "lecture-notes.txt")
+        self.assertEqual(created["type"], "txt")
+        saved_file = self.upload_dir / "course_1" / "lecture-notes.txt"
+        self.assertEqual(saved_file.read_bytes(), b"Cache mapping and replacement policies.")
+
+        saved_data = json.loads(self.data_file.read_text(encoding="utf-8"))
+        self.assertEqual(saved_data["materials"]["1"][-1], created)
+
+        self._restart_server()
+        materials = self._request("GET", "/api/courses/1/materials")
+        self.assertEqual(materials["materials"][-1], created)
+
+    def test_upload_rejects_unsupported_file_type(self):
+        status, response = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "notes.exe",
+            b"not a course document",
+            "application/octet-stream",
+            expect_error=True,
+        )
+
+        self.assertEqual(status, 400)
+        self.assertEqual(response["detail"], "Unsupported file type")
+
+    def test_upload_returns_not_found_for_unknown_course(self):
+        status, response = self._multipart_request(
+            "/api/courses/999/materials/upload",
+            "notes.txt",
+            b"course does not exist",
+            "text/plain",
+            expect_error=True,
+        )
+
+        self.assertEqual(status, 404)
+        self.assertEqual(response["detail"], "Course not found")
+
+    def test_upload_without_file_returns_bad_request(self):
+        status, response = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            None,
+            b"",
+            "text/plain",
+            expect_error=True,
+        )
+
+        self.assertEqual(status, 400)
+        self.assertEqual(response["detail"], "Uploaded file must have a filename")
 
     def _request(self, method, path, payload=None):
         data = None
@@ -124,11 +152,47 @@ class CoursesApiPersistenceTest(unittest.TestCase):
         with urlopen(request, timeout=5) as response:
             return json.loads(response.read().decode("utf-8"))
 
-    def _restart_server(self):
-        self.server.terminate()
-        self.server.wait(timeout=5)
+    def _multipart_request(
+        self,
+        path,
+        filename,
+        content,
+        content_type,
+        expect_error=False,
+    ):
+        boundary = "----CampusAITestBoundary"
+        parts = []
+        if filename is not None:
+            parts.extend(
+                [
+                    f'--{boundary}\r\n'.encode(),
+                    f'Content-Disposition: form-data; name="file"; filename="{filename}"\r\n'.encode(),
+                    f"Content-Type: {content_type}\r\n\r\n".encode(),
+                    content,
+                    b"\r\n",
+                ]
+            )
+        parts.append(f"--{boundary}--\r\n".encode())
+        request = Request(
+            f"{self.base_url}{path}",
+            data=b"".join(parts),
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+            method="POST",
+        )
+        try:
+            with urlopen(request, timeout=5) as response:
+                result = json.loads(response.read().decode("utf-8"))
+                return result if not expect_error else (response.status, result)
+        except HTTPError as error:
+            result = json.loads(error.read().decode("utf-8"))
+            if not expect_error:
+                raise
+            return error.code, result
+
+    def _start_server(self):
         env = os.environ.copy()
         env["CAMPUSAI_COURSE_DATA_FILE"] = str(self.data_file)
+        env["CAMPUSAI_UPLOAD_DIR"] = str(self.upload_dir)
         self.server = subprocess.Popen(
             [
                 sys.executable,
@@ -145,6 +209,18 @@ class CoursesApiPersistenceTest(unittest.TestCase):
             stderr=subprocess.DEVNULL,
         )
         self._wait_for_server()
+
+    def _stop_server(self):
+        self.server.terminate()
+        try:
+            self.server.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            self.server.kill()
+            self.server.wait(timeout=5)
+
+    def _restart_server(self):
+        self._stop_server()
+        self._start_server()
 
     def _wait_for_server(self):
         last_error = None

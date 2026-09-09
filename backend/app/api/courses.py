@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from backend.app.schemas.course import (
     Course,
@@ -9,6 +9,7 @@ from backend.app.schemas.course import (
 )
 from backend.app.services.course_service import (
     create_material,
+    create_uploaded_material,
     get_course,
     list_courses as service_list_courses,
     list_materials,
@@ -37,7 +38,7 @@ def get_course_detail(course_id: int):
     return course
 
 
-@router.get("/{course_id}/materials", response_model=MaterialListResponse)
+@router.get("/{course_id}/materials", response_model=MaterialListResponse, response_model_exclude_none=True)
 def list_course_materials(course_id: int):
     course = get_course(course_id)
 
@@ -53,7 +54,7 @@ def list_course_materials(course_id: int):
     }
 
 
-@router.post("/{course_id}/materials", response_model=Material, status_code=201)
+@router.post("/{course_id}/materials", response_model=Material, response_model_exclude_none=True, status_code=201)
 def create_course_material(course_id: int, material: MaterialCreate):
     course = get_course(course_id)
 
@@ -61,3 +62,18 @@ def create_course_material(course_id: int, material: MaterialCreate):
         raise HTTPException(status_code=404, detail="Course not found")
 
     return create_material(course_id, material)
+
+
+@router.post("/{course_id}/materials/upload", response_model=Material, response_model_exclude_none=True, status_code=201)
+def upload_course_material(course_id: int, file: UploadFile | None = File(None)):
+    course = get_course(course_id)
+
+    if course is None:
+        raise HTTPException(status_code=404, detail="Course not found")
+    if file is None or not file.filename:
+        raise HTTPException(status_code=400, detail="Uploaded file must have a filename")
+
+    try:
+        return create_uploaded_material(course_id, file.filename, file.file)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
