@@ -7,7 +7,7 @@ CampusAI V0.1 is an AI-assisted learning-material management and review platform
 ## Current Status
 
 - Version: `V0.1`
-- Current progress: approximately `94%`
+- Current progress: `100%` for the V0.1 release scope
 - Backend: FastAPI
 - Storage: local JSON file
 - Verification: `unittest` integration tests that start the API and exercise real HTTP requests
@@ -63,7 +63,8 @@ campus-ai/
 ├── docs/
 │   ├── API_OVERVIEW.md
 │   ├── DEMO_SCRIPT.md
-│   └── DEVELOPMENT_LOG.md
+│   ├── DEVELOPMENT_LOG.md
+│   └── V0.1_ACCEPTANCE.md
 └── requirements.txt
 ```
 
@@ -128,3 +129,4 @@ These services are isolated under `backend/app/services/`, leaving a clear repla
 - [Development log](docs/DEVELOPMENT_LOG.md)
 - [API overview](docs/API_OVERVIEW.md)
 - [Competition demo script](docs/DEMO_SCRIPT.md)
+- [V0.1 acceptance checklist](docs/V0.1_ACCEPTANCE.md)

@@ -1,5 +1,11 @@
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
 .env
+.env.*
 .vscode/
+
+# Runtime uploads are local user data and must not be committed.
+backend/app/uploads/*
+!backend/app/uploads/.gitkeep

@@ -16,6 +16,7 @@ This log records the incremental development of CampusAI V0.1. Each stage was ke
 | 11 | Material search | Added keyword search across metadata, extracted text, and mock summaries with course filtering. | Search returns correct matches, empty results, and parameter errors. | Made growing material collections discoverable. |
 | 12 | Study-card generation | Added local mock review-card generation and persistent cards per material. | Repeated generation replaces cards instead of appending duplicates. | Turned stored materials into a concrete review aid. |
 | 13 | Documentation and demo materials | Added project overview, API reference, development log, and presentation script. | Documentation matches the tested V0.1 API surface. | Makes the project easier to assess, demonstrate, and continue. |
+| 14 | Final acceptance and release preparation | Checked repository hygiene, expanded ignore rules, verified documentation, and recorded the release checklist. | Full test suite passes and the release tree contains no tracked runtime artifacts. | Makes V0.1 ready for review, demonstration, and handoff. |
 
 ## Verification Practice
 
