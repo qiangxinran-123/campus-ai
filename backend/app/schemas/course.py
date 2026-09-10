@@ -39,3 +39,14 @@ class MaterialListResponse(BaseModel):
     course_id: int
     count: int
     materials: list[Material]
+
+
+class MaterialSearchResult(Material):
+    course_id: int
+
+
+class MaterialSearchResponse(BaseModel):
+    query: str
+    course_id: int | None = None
+    count: int
+    materials: list[MaterialSearchResult]

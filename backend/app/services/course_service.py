@@ -13,6 +13,13 @@ DATA_FILE = Path(os.getenv("CAMPUSAI_COURSE_DATA_FILE", DEFAULT_DATA_FILE))
 DEFAULT_UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads"
 UPLOAD_DIR = Path(os.getenv("CAMPUSAI_UPLOAD_DIR", DEFAULT_UPLOAD_DIR))
 SUPPORTED_UPLOAD_EXTENSIONS = {".pdf", ".ppt", ".pptx", ".doc", ".docx", ".txt", ".md"}
+SEARCHABLE_MATERIAL_FIELDS = (
+    "title",
+    "summary",
+    "filename",
+    "text_preview",
+    "ai_summary",
+)
 
 
 def load_course_data():
@@ -137,3 +144,24 @@ def update_material(material_id: int, updates: dict):
     material.update(updates)
     save_course_data(data)
     return material
+
+
+def search_materials(keyword: str, course_id: int | None = None):
+    normalized_keyword = keyword.casefold()
+    data = load_course_data()
+    results = []
+
+    for stored_course_id, materials in data["materials"].items():
+        if course_id is not None and int(stored_course_id) != course_id:
+            continue
+
+        for material in materials:
+            if any(
+                normalized_keyword in str(material.get(field, "")).casefold()
+                for field in SEARCHABLE_MATERIAL_FIELDS
+            ):
+                result = dict(material)
+                result["course_id"] = int(stored_course_id)
+                results.append(result)
+
+    return results

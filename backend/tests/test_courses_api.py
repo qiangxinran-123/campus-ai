@@ -199,6 +199,81 @@ class CoursesApiPersistenceTest(unittest.TestCase):
         self.assertEqual(materials["count"], 2)
         self.assertEqual(second["id"], first["id"])
         self.assertNotEqual(second["summary_updated_at"], first["summary_updated_at"])
+    def test_search_matches_material_title_case_insensitively(self):
+        response = self._request("GET", "/api/materials/search?q=CACHE+MEMORY")
+
+        self.assertEqual(response["query"], "CACHE MEMORY")
+        self.assertEqual(response["count"], 1)
+        self.assertEqual(response["materials"][0]["id"], 101)
+        self.assertEqual(response["materials"][0]["course_id"], 1)
+
+    def test_search_matches_uploaded_text_preview(self):
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "graph-notes.txt",
+            b"Graph traversal visits vertices through a queue or stack.",
+            "text/plain",
+        )
+
+        response = self._request("GET", "/api/materials/search?q=TRAVERSAL")
+
+        self.assertEqual(response["count"], 1)
+        self.assertEqual(response["materials"][0]["id"], created["id"])
+        self.assertEqual(response["materials"][0]["course_id"], 1)
+
+    def test_search_matches_generated_ai_summary(self):
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "dynamic-programming.txt",
+            b"Dynamic programming solves overlapping subproblems efficiently.",
+            "text/plain",
+        )
+        self._request("POST", f"/api/materials/{created['id']}/summary", {})
+
+        response = self._request("GET", "/api/materials/search?q=mock+summary")
+
+        self.assertEqual(response["count"], 1)
+        self.assertEqual(response["materials"][0]["id"], created["id"])
+        self.assertTrue(response["materials"][0]["ai_summary"].startswith("Mock summary: "))
+
+    def test_search_respects_course_filter(self):
+        matching_course = self._request("GET", "/api/materials/search?q=cache&course_id=1")
+        other_course = self._request("GET", "/api/materials/search?q=cache&course_id=7")
+
+        self.assertEqual(matching_course["count"], 1)
+        self.assertEqual(matching_course["materials"][0]["course_id"], 1)
+        self.assertEqual(other_course["count"], 0)
+        self.assertEqual(other_course["materials"], [])
+
+    def test_search_returns_empty_result_when_no_material_matches(self):
+        response = self._request("GET", "/api/materials/search?q=unmatched-keyword")
+
+        self.assertEqual(response["count"], 0)
+        self.assertEqual(response["materials"], [])
+
+    def test_search_rejects_missing_or_blank_keyword(self):
+        missing_status, missing_response = self._request_with_error(
+            "GET",
+            "/api/materials/search",
+        )
+        blank_status, blank_response = self._request_with_error(
+            "GET",
+            "/api/materials/search?q=%20%20",
+        )
+
+        self.assertEqual(missing_status, 400)
+        self.assertEqual(missing_response["detail"], "Search keyword must not be empty")
+        self.assertEqual(blank_status, 400)
+        self.assertEqual(blank_response["detail"], "Search keyword must not be empty")
+
+    def test_search_returns_not_found_for_unknown_course_filter(self):
+        status, response = self._request_with_error(
+            "GET",
+            "/api/materials/search?q=cache&course_id=999",
+        )
+
+        self.assertEqual(status, 404)
+        self.assertEqual(response["detail"], "Course not found")
     def test_upload_rejects_unsupported_file_type(self):
         status, response = self._multipart_request(
             "/api/courses/1/materials/upload",
