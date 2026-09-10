@@ -51,11 +51,12 @@
               <p>支持 TXT、Markdown 文件</p>
             </div>
           </div>
+          <p id="upload-target" class="upload-target">请先选择课程</p>
           <label class="file-picker">
             <span id="file-label">选择文件</span>
-            <input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown" required>
+            <input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown" required disabled>
           </label>
-          <button class="primary-button" type="submit">上传并提取文本</button>
+          <button id="upload-submit" class="primary-button" type="submit" disabled>上传并提取文本</button>
         </form>
 
         <form id="search-form" class="tool-panel">
@@ -74,17 +75,39 @@
         </form>
       </section>
 
-      <section class="materials-section">
-        <div class="section-heading materials-heading">
-          <div>
-            <span class="eyebrow">MATERIALS</span>
-            <h2>课程资料</h2>
+      <section class="workspace-grid">
+        <section class="materials-section panel">
+          <div class="section-heading materials-heading">
+            <div>
+              <span class="eyebrow">MATERIALS</span>
+              <h2>课程资料</h2>
+            </div>
+            <div class="materials-heading-actions">
+              <span id="search-result-count" class="result-count">共 0 份</span>
+              <button id="clear-search" class="text-button" type="button" hidden>返回课程资料</button>
+            </div>
           </div>
-          <button id="clear-search" class="text-button" type="button" hidden>清除搜索</button>
-        </div>
-        <div id="materials-list" class="materials-list" aria-live="polite">
-          <p class="empty-state">请选择课程查看资料。</p>
-        </div>
+          <div id="materials-list" class="materials-list" aria-live="polite">
+            <p class="empty-state">请选择课程查看资料。</p>
+          </div>
+        </section>
+
+        <aside id="material-detail" class="detail-panel panel is-empty" aria-live="polite">
+          <div class="section-heading detail-heading">
+            <div>
+              <span class="eyebrow">MATERIAL DETAIL</span>
+              <h2>资料详情</h2>
+            </div>
+          </div>
+          <div id="detail-content" class="detail-content">
+            <p class="detail-empty-title">请选择一份资料</p>
+            <p class="muted">资料的正文、摘要和学习卡片会显示在这里。</p>
+          </div>
+          <div id="detail-actions" class="detail-actions" hidden>
+            <button id="detail-summary" class="primary-button" type="button">生成摘要</button>
+            <button id="detail-cards" class="secondary-button" type="button">生成学习卡片</button>
+          </div>
+        </aside>
       </section>
     </section>
   </main>

@@ -8,9 +8,9 @@ CampusAI is a FastAPI-based AI study assistant for university students, focused 
 
 ## 项目状态
 
-- 当前版本：`V0.2 开发中`
-- V0.1 后端发布范围已完成，当前正在补充原生前端页面
-- 当前进度：V0.1 发布范围已完成
+- 当前版本：`V0.2 前端体验完善阶段`
+- V0.1 后端发布范围已完成，V0.2 正在完善原生前端演示体验
+- 当前进度：V0.2 前端核心演示流程已打通，持续完善交互体验
 - 项目定位：面向大学生的 AI 学习资料管理与复习辅助平台
 - 后端框架：FastAPI
 - 数据存储：本地 JSON 文件
@@ -99,6 +99,18 @@ uvicorn backend.main:app --reload
 
 [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+
+### 前端演示流程
+
+启动服务后，优先通过前端首页完成比赛演示：
+
+1. 访问 `http://127.0.0.1:8000`，选择课程并查看资料。
+2. 在已选课程下上传 `.txt` 或 `.md`，上传完成后页面会自动选中新资料。
+3. 在资料详情中查看 `extracted`、`text_length`、`text_preview` 和 `summary`。
+4. 使用“生成摘要”和“生成学习卡片”按钮，查看持久化结果。
+5. 使用搜索框检索资料，点击搜索结果可回到对应资料详情；点击“返回课程资料”恢复完整列表。
+
+页面由 FastAPI 直接托管，使用原生 HTML、CSS 和 JavaScript，无需构建步骤、外部 CDN 或额外前端服务。`/docs` 保留用于查看和调试 API。
 FastAPI 交互式 API 文档仍然可以访问：
 
 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
@@ -142,7 +154,7 @@ wsl -d Ubuntu --cd /home/qxrrr/projects/campus-ai \
 - 接入真实 LLM，替换当前 mock 摘要和卡片服务
 - 增加 Embedding、RAG 检索和向量数据库
 - 支持 PDF、PowerPoint、Word 的正文提取
-- 增加学生端前端页面和课程复习视图
+- 继续完善学生端前端页面和课程复习视图
 - 增加用户认证、资料归属和协作能力
 - 将 JSON 存储升级为数据库，并支持异步处理
 
