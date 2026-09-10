@@ -8,6 +8,15 @@ class Course(BaseModel):
     description: str
 
 
+class StudyCard(BaseModel):
+    id: int
+    question: str
+    answer: str
+    source_material_id: int
+    card_type: str
+    created_at: str
+
+
 class Material(BaseModel):
     id: int
     title: str
@@ -22,6 +31,10 @@ class Material(BaseModel):
     summary_generated: bool | None = None
     summary_method: str | None = None
     summary_updated_at: str | None = None
+    cards: list[StudyCard] | None = None
+    cards_generated: bool | None = None
+    cards_generated_at: str | None = None
+    cards_method: str | None = None
 
 
 class MaterialCreate(BaseModel):
@@ -50,3 +63,11 @@ class MaterialSearchResponse(BaseModel):
     course_id: int | None = None
     count: int
     materials: list[MaterialSearchResult]
+
+
+class CardGenerationResponse(BaseModel):
+    material_id: int
+    count: int
+    cards: list[StudyCard]
+    cards_generated: bool
+    cards_generated_at: str

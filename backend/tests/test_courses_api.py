@@ -199,6 +199,88 @@ class CoursesApiPersistenceTest(unittest.TestCase):
         self.assertEqual(materials["count"], 2)
         self.assertEqual(second["id"], first["id"])
         self.assertNotEqual(second["summary_updated_at"], first["summary_updated_at"])
+    def test_ai_summary_material_can_generate_and_persist_cards(self):
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "card-notes.txt",
+            b"Cache locality improves memory performance. Review cache hit and cache miss.",
+            "text/plain",
+        )
+        self._request("POST", f"/api/materials/{created['id']}/summary", {})
+
+        generated = self._request("POST", f"/api/materials/{created['id']}/cards", {})
+
+        self.assertEqual(generated["material_id"], created["id"])
+        self.assertEqual(generated["count"], 3)
+        self.assertTrue(generated["cards_generated"])
+        self.assertTrue(generated["cards_generated_at"])
+        for card in generated["cards"]:
+            self.assertEqual(card["source_material_id"], created["id"])
+            self.assertIn(card["card_type"], {"concept", "review"})
+            self.assertTrue(card["question"])
+            self.assertTrue(card["answer"])
+            self.assertTrue(card["created_at"])
+
+        saved_data = json.loads(self.data_file.read_text(encoding="utf-8"))
+        saved_material = saved_data["materials"]["1"][-1]
+        self.assertEqual(saved_material["cards"], generated["cards"])
+        self.assertTrue(saved_material["cards_generated"])
+
+        materials = self._request("GET", "/api/courses/1/materials")
+        listed = next(item for item in materials["materials"] if item["id"] == created["id"])
+        self.assertEqual(listed["cards"], generated["cards"])
+        self.assertTrue(listed["cards_generated"])
+
+    def test_repeated_card_generation_replaces_existing_cards(self):
+        created = self._multipart_request(
+            "/api/courses/1/materials/upload",
+            "repeat-cards.txt",
+            b"Pipelines improve instruction throughput.",
+            "text/plain",
+        )
+        first = self._request("POST", f"/api/materials/{created['id']}/cards", {})
+        time.sleep(0.002)
+        second = self._request("POST", f"/api/materials/{created['id']}/cards", {})
+
+        materials = self._request("GET", "/api/courses/1/materials")
+        matching = [item for item in materials["materials"] if item["id"] == created["id"]]
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(len(matching[0]["cards"]), 3)
+        self.assertEqual(second["count"], 3)
+        self.assertEqual(
+            [card["id"] for card in second["cards"]],
+            [card["id"] for card in first["cards"]],
+        )
+        self.assertNotEqual(second["cards_generated_at"], first["cards_generated_at"])
+
+    def test_card_generation_returns_not_found_for_unknown_material(self):
+        status, response = self._request_with_error(
+            "POST",
+            "/api/materials/9999/cards",
+            {},
+        )
+
+        self.assertEqual(status, 404)
+        self.assertEqual(response["detail"], "Material not found")
+
+    def test_card_generation_rejects_material_without_text(self):
+        created = self._request(
+            "POST",
+            "/api/courses/1/materials",
+            {
+                "title": "Empty Material",
+                "type": "note",
+                "summary": "",
+            },
+        )
+        status, response = self._request_with_error(
+            "POST",
+            f"/api/materials/{created['id']}/cards",
+            {},
+        )
+
+        self.assertEqual(status, 400)
+        self.assertEqual(response["detail"], "Material has no text available for card generation")
     def test_search_matches_material_title_case_insensitively(self):
         response = self._request("GET", "/api/materials/search?q=CACHE+MEMORY")
 
