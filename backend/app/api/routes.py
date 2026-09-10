@@ -9,7 +9,7 @@ router.include_router(courses_router)
 router.include_router(materials_router)
 
 
-@router.get("/")
+@router.get("/api")
 def root():
     return {
         "message": "Welcome to CampusAI API",

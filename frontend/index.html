@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusAI | 学习资料管理与复习辅助</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-block">
+      <span class="brand-mark">CA</span>
+      <div>
+        <h1>CampusAI</h1>
+        <p>面向大学生的 AI 学习资料管理与复习辅助平台</p>
+      </div>
+    </div>
+    <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">打开 API 文档 <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main class="app-shell">
+    <aside class="sidebar panel">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">COURSES</span>
+          <h2>我的课程</h2>
+        </div>
+        <span id="course-count" class="count-badge">0</span>
+      </div>
+      <div id="course-list" class="course-list" aria-live="polite">
+        <p class="empty-state">正在加载课程...</p>
+      </div>
+    </aside>
+
+    <section class="content-column">
+      <div class="workspace-heading">
+        <div>
+          <span class="eyebrow">LEARNING WORKSPACE</span>
+          <h2 id="course-title">请选择一门课程</h2>
+          <p id="course-description" class="muted">课程资料和复习工具会显示在这里。</p>
+        </div>
+        <div id="status-pill" class="status-pill" data-tone="neutral">准备就绪</div>
+      </div>
+
+      <section class="tools-grid" aria-label="资料工具">
+        <form id="upload-form" class="tool-panel">
+          <div class="tool-heading">
+            <div class="tool-icon upload-icon">↑</div>
+            <div>
+              <h3>上传学习资料</h3>
+              <p>支持 TXT、Markdown 文件</p>
+            </div>
+          </div>
+          <label class="file-picker">
+            <span id="file-label">选择文件</span>
+            <input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown" required>
+          </label>
+          <button class="primary-button" type="submit">上传并提取文本</button>
+        </form>
+
+        <form id="search-form" class="tool-panel">
+          <div class="tool-heading">
+            <div class="tool-icon search-icon">⌕</div>
+            <div>
+              <h3>搜索资料</h3>
+              <p>搜索标题、正文和摘要</p>
+            </div>
+          </div>
+          <label class="search-field">
+            <span class="sr-only">搜索关键词</span>
+            <input id="search-input" type="search" placeholder="输入关键词，例如 cache" autocomplete="off">
+          </label>
+          <button class="secondary-button" type="submit">搜索当前课程</button>
+        </form>
+      </section>
+
+      <section class="materials-section">
+        <div class="section-heading materials-heading">
+          <div>
+            <span class="eyebrow">MATERIALS</span>
+            <h2>课程资料</h2>
+          </div>
+          <button id="clear-search" class="text-button" type="button" hidden>清除搜索</button>
+        </div>
+        <div id="materials-list" class="materials-list" aria-live="polite">
+          <p class="empty-state">请选择课程查看资料。</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

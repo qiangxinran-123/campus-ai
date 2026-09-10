@@ -8,12 +8,14 @@ CampusAI is a FastAPI-based AI study assistant for university students, focused 
 
 ## 项目状态
 
-- 当前版本：`V0.1`
+- 当前版本：`V0.2 开发中`
+- V0.1 后端发布范围已完成，当前正在补充原生前端页面
 - 当前进度：V0.1 发布范围已完成
 - 项目定位：面向大学生的 AI 学习资料管理与复习辅助平台
 - 后端框架：FastAPI
 - 数据存储：本地 JSON 文件
 - 测试方式：基于真实 HTTP 请求的 `unittest` 集成测试
+- 前端：原生 HTML、CSS、JavaScript，无构建工具和外部 CDN
 
 推荐 GitHub 仓库描述：
 
@@ -40,6 +42,7 @@ CampusAI：面向大学生的 AI 学习资料管理与复习辅助平台 | FastA
 - 生成并持久化 mock AI 摘要
 - 按标题、文件名、资料摘要、提取文本和 AI 摘要搜索资料
 - 生成并持久化学习复习卡片
+- 通过原生前端页面完成课程选择、资料上传、搜索、摘要和卡片操作
 - 新增资料和处理结果写回 JSON，服务重启后仍然保留
 
 ## API 概览
@@ -69,6 +72,10 @@ campus-ai/
 │   │   ├── data/courses.json       # 默认示例课程与资料数据
 │   │   └── uploads/                # 运行时上传目录，不提交真实用户文件
 │   └── tests/test_courses_api.py   # HTTP 集成测试
+├── frontend/
+│   ├── index.html                # 前端首页
+│   ├── styles.css                # 页面样式
+│   └── app.js                    # 前端 API 交互逻辑
 ├── docs/
 │   ├── API_OVERVIEW.md             # API 中文总览
 │   ├── DEMO_SCRIPT.md              # 比赛演示讲稿
@@ -88,7 +95,11 @@ pip install -r requirements.txt
 uvicorn backend.main:app --reload
 ```
 
-启动后打开 FastAPI 交互式文档：
+启动后打开 CampusAI 前端首页：
+
+[http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+FastAPI 交互式 API 文档仍然可以访问：
 
 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
