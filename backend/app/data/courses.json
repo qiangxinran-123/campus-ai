@@ -2,15 +2,21 @@
   "courses": [
     {
       "id": 1,
-      "name": "Computer Organization",
-      "semester": "Junior Year",
-      "description": "Course materials and notes for computer organization."
+      "name": "Computer Organization / 计算机组成原理",
+      "semester": "Junior Year / 大三",
+      "description": "Explore cache memory, CPU pipelines, and computer performance."
     },
     {
       "id": 2,
-      "name": "Machine Learning",
-      "semester": "Junior Year",
-      "description": "Basic machine learning concepts, assignments, and review notes."
+      "name": "Machine Learning / 机器学习",
+      "semester": "Junior Year / 大三",
+      "description": "Review regression, gradient descent, and model evaluation."
+    },
+    {
+      "id": 3,
+      "name": "Data Structures / 数据结构",
+      "semester": "Sophomore Year / 大二",
+      "description": "Practice linked lists, trees, graphs, and algorithmic thinking."
     }
   ],
   "materials": {
@@ -19,21 +25,263 @@
         "id": 101,
         "title": "Cache Memory Notes",
         "type": "note",
-        "summary": "Key ideas about cache hit, cache miss, and set associative cache."
+        "summary": "Key ideas about cache hit, cache miss, locality, and set associative cache.",
+        "filename": "cache-memory-notes.md",
+        "text_preview": "Cache memory reduces average memory access time by exploiting temporal locality and spatial locality. A cache hit finds data in a nearby cache line, while a cache miss requires fetching it from a lower memory level. Set associative cache balances lookup cost and flexibility.",
+        "text_length": 275,
+        "extracted": true,
+        "ai_summary": "Mock summary: Cache memory improves performance through temporal and spatial locality. Cache hits are fast, while cache misses fetch data from lower memory levels.",
+        "summary_generated": true,
+        "summary_method": "mock",
+        "summary_updated_at": "2026-09-01T18:00:00+08:00",
+        "cards": [
+          {
+            "id": 10101,
+            "question": "What is the core topic of this material?",
+            "answer": "Cache memory reduces average memory access time by exploiting temporal locality and spatial locality.",
+            "source_material_id": 101,
+            "card_type": "concept",
+            "created_at": "2026-09-01T18:00:00+08:00"
+          },
+          {
+            "id": 10102,
+            "question": "Which key idea should you review from this material?",
+            "answer": "A cache hit finds data in a nearby cache line, while a cache miss requires fetching it from a lower memory level.",
+            "source_material_id": 101,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:00:00+08:00"
+          },
+          {
+            "id": 10103,
+            "question": "How would you explain this material in one sentence?",
+            "answer": "Set associative cache balances lookup cost and flexibility.",
+            "source_material_id": 101,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:00:00+08:00"
+          }
+        ],
+        "cards_generated": true,
+        "cards_generated_at": "2026-09-01T18:00:00+08:00",
+        "cards_method": "mock"
       },
       {
         "id": 102,
-        "title": "Pipeline Slides",
+        "title": "CPU Pipeline and Hazards",
         "type": "slide",
-        "summary": "Introduction to CPU pipeline stages and hazards."
+        "summary": "Pipeline stages, data hazards, control hazards, and forwarding.",
+        "filename": "cpu-pipeline-hazards.txt",
+        "text_preview": "A CPU pipeline overlaps instruction stages to improve throughput. Data hazards occur when instructions depend on earlier results, while control hazards come from branches. Forwarding and branch prediction reduce some pipeline stalls.",
+        "text_length": 233,
+        "extracted": true,
+        "ai_summary": "Mock summary: CPU pipelining improves instruction throughput by overlapping stages. Data hazards and control hazards can create stalls, which forwarding and branch prediction help reduce.",
+        "summary_generated": true,
+        "summary_method": "mock",
+        "summary_updated_at": "2026-09-01T18:05:00+08:00",
+        "cards": [
+          {
+            "id": 10201,
+            "question": "What is the core topic of this material?",
+            "answer": "A CPU pipeline overlaps instruction stages to improve throughput.",
+            "source_material_id": 102,
+            "card_type": "concept",
+            "created_at": "2026-09-01T18:05:00+08:00"
+          },
+          {
+            "id": 10202,
+            "question": "Which key idea should you review from this material?",
+            "answer": "Data hazards occur when instructions depend on earlier results, while control hazards come from branches.",
+            "source_material_id": 102,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:05:00+08:00"
+          },
+          {
+            "id": 10203,
+            "question": "How would you explain this material in one sentence?",
+            "answer": "Forwarding and branch prediction reduce some pipeline stalls.",
+            "source_material_id": 102,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:05:00+08:00"
+          }
+        ],
+        "cards_generated": true,
+        "cards_generated_at": "2026-09-01T18:05:00+08:00",
+        "cards_method": "mock"
       }
     ],
     "2": [
       {
         "id": 201,
-        "title": "Linear Regression Notes",
+        "title": "Gradient Descent Notes",
         "type": "note",
-        "summary": "Loss function, gradient descent, and model evaluation."
+        "summary": "Loss function, gradient descent, learning rate, and model convergence.",
+        "filename": "gradient-descent-notes.md",
+        "text_preview": "Gradient descent minimizes a loss function by moving model parameters opposite to the gradient. The learning rate controls the step size, and a suitable rate helps the model converge without overshooting.",
+        "text_length": 204,
+        "extracted": true,
+        "ai_summary": "Mock summary: Gradient descent minimizes a loss function by following the negative gradient. The learning rate controls each update and strongly affects convergence.",
+        "summary_generated": true,
+        "summary_method": "mock",
+        "summary_updated_at": "2026-09-01T18:10:00+08:00",
+        "cards": [
+          {
+            "id": 20101,
+            "question": "What is the core topic of this material?",
+            "answer": "Gradient descent minimizes a loss function by moving model parameters opposite to the gradient.",
+            "source_material_id": 201,
+            "card_type": "concept",
+            "created_at": "2026-09-01T18:10:00+08:00"
+          },
+          {
+            "id": 20102,
+            "question": "Which key idea should you review from this material?",
+            "answer": "The learning rate controls the step size of each parameter update.",
+            "source_material_id": 201,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:10:00+08:00"
+          },
+          {
+            "id": 20103,
+            "question": "How would you explain this material in one sentence?",
+            "answer": "A suitable learning rate helps the model converge without overshooting.",
+            "source_material_id": 201,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:10:00+08:00"
+          }
+        ],
+        "cards_generated": true,
+        "cards_generated_at": "2026-09-01T18:10:00+08:00",
+        "cards_method": "mock"
+      },
+      {
+        "id": 202,
+        "title": "Classification Review",
+        "type": "review",
+        "summary": "Logistic regression, decision boundaries, precision, and recall.",
+        "filename": "classification-review.txt",
+        "text_preview": "A classification model assigns labels to examples using a decision boundary. Logistic regression produces probabilities, while precision and recall describe different aspects of prediction quality.",
+        "text_length": 197,
+        "extracted": true,
+        "ai_summary": "Mock summary: Classification predicts labels with a decision boundary. Logistic regression outputs probabilities, while precision and recall measure prediction quality from different perspectives.",
+        "summary_generated": true,
+        "summary_method": "mock",
+        "summary_updated_at": "2026-09-01T18:15:00+08:00",
+        "cards": [
+          {
+            "id": 20201,
+            "question": "What is the core topic of this material?",
+            "answer": "A classification model assigns labels to examples using a decision boundary.",
+            "source_material_id": 202,
+            "card_type": "concept",
+            "created_at": "2026-09-01T18:15:00+08:00"
+          },
+          {
+            "id": 20202,
+            "question": "Which key idea should you review from this material?",
+            "answer": "Logistic regression produces probabilities for classification decisions.",
+            "source_material_id": 202,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:15:00+08:00"
+          },
+          {
+            "id": 20203,
+            "question": "How would you explain this material in one sentence?",
+            "answer": "Precision and recall describe different aspects of prediction quality.",
+            "source_material_id": 202,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:15:00+08:00"
+          }
+        ],
+        "cards_generated": true,
+        "cards_generated_at": "2026-09-01T18:15:00+08:00",
+        "cards_method": "mock"
+      }
+    ],
+    "3": [
+      {
+        "id": 301,
+        "title": "Linked List Review",
+        "type": "note",
+        "summary": "Nodes, pointers, insertion, deletion, and linked list traversal.",
+        "filename": "linked-list-review.md",
+        "text_preview": "A linked list stores data in nodes connected by pointers. Insertion and deletion can be efficient when the target node is known, but traversal takes linear time because nodes are not stored contiguously.",
+        "text_length": 203,
+        "extracted": true,
+        "ai_summary": "Mock summary: A linked list connects nodes with pointers. It supports efficient insertion and deletion at known positions, but traversal is generally linear.",
+        "summary_generated": true,
+        "summary_method": "mock",
+        "summary_updated_at": "2026-09-01T18:20:00+08:00",
+        "cards": [
+          {
+            "id": 30101,
+            "question": "What is the core topic of this material?",
+            "answer": "A linked list stores data in nodes connected by pointers.",
+            "source_material_id": 301,
+            "card_type": "concept",
+            "created_at": "2026-09-01T18:20:00+08:00"
+          },
+          {
+            "id": 30102,
+            "question": "Which key idea should you review from this material?",
+            "answer": "Insertion and deletion can be efficient when the target node is known.",
+            "source_material_id": 301,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:20:00+08:00"
+          },
+          {
+            "id": 30103,
+            "question": "How would you explain this material in one sentence?",
+            "answer": "Traversal takes linear time because nodes are not stored contiguously.",
+            "source_material_id": 301,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:20:00+08:00"
+          }
+        ],
+        "cards_generated": true,
+        "cards_generated_at": "2026-09-01T18:20:00+08:00",
+        "cards_method": "mock"
+      },
+      {
+        "id": 302,
+        "title": "Trees and Graphs Basics",
+        "type": "note",
+        "summary": "Tree traversal, breadth-first search, depth-first search, and graph connections.",
+        "filename": "trees-graphs-basics.txt",
+        "text_preview": "Trees represent hierarchical relationships, while graphs represent general connections. Breadth-first search explores level by level, and depth-first search explores one branch before backtracking.",
+        "text_length": 197,
+        "extracted": true,
+        "ai_summary": "Mock summary: Trees model hierarchies and graphs model general connections. Breadth-first search explores levels, while depth-first search explores branches.",
+        "summary_generated": true,
+        "summary_method": "mock",
+        "summary_updated_at": "2026-09-01T18:25:00+08:00",
+        "cards": [
+          {
+            "id": 30201,
+            "question": "What is the core topic of this material?",
+            "answer": "Trees represent hierarchical relationships, while graphs represent general connections.",
+            "source_material_id": 302,
+            "card_type": "concept",
+            "created_at": "2026-09-01T18:25:00+08:00"
+          },
+          {
+            "id": 30202,
+            "question": "Which key idea should you review from this material?",
+            "answer": "Breadth-first search explores a graph level by level.",
+            "source_material_id": 302,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:25:00+08:00"
+          },
+          {
+            "id": 30203,
+            "question": "How would you explain this material in one sentence?",
+            "answer": "Depth-first search explores one branch before backtracking.",
+            "source_material_id": 302,
+            "card_type": "review",
+            "created_at": "2026-09-01T18:25:00+08:00"
+          }
+        ],
+        "cards_generated": true,
+        "cards_generated_at": "2026-09-01T18:25:00+08:00",
+        "cards_method": "mock"
       }
     ]
   }

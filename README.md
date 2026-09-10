@@ -80,9 +80,23 @@ campus-ai/
 │   ├── API_OVERVIEW.md             # API 中文总览
 │   ├── DEMO_SCRIPT.md              # 比赛演示讲稿
 │   ├── DEVELOPMENT_LOG.md          # 分阶段开发日志
-│   └── V0.1_ACCEPTANCE.md          # V0.1 最终验收清单
+│   ├── V0.1_ACCEPTANCE.md          # V0.1 最终验收清单
+│   ├── DEMO_DATA.md                # 默认演示数据说明
+│   └── DEMO_CHECKLIST.md           # 演示前检查清单
+├── scripts/
+│   └── start_dev.sh                # WSL/Linux 一键启动脚本
 └── requirements.txt
 ```
+
+## 快速启动
+
+在项目根目录执行：
+
+~~~bash
+bash scripts/start_dev.sh
+~~~
+
+脚本会检查项目目录、虚拟环境和 FastAPI/Uvicorn 依赖，不会自动安装依赖。启动成功后访问 http://127.0.0.1:8000。
 
 ## 本地运行
 
@@ -158,9 +172,19 @@ wsl -d Ubuntu --cd /home/qxrrr/projects/campus-ai \
 - 增加用户认证、资料归属和协作能力
 - 将 JSON 存储升级为数据库，并支持异步处理
 
+## 演示数据
+
+默认数据包含三门课程、每门两条资料，并预置文本提取、mock 摘要和学习卡片字段，适合打开首页后直接演示。详细关键词和推荐流程见 [演示数据说明](docs/DEMO_DATA.md)。
+
+## 演示检查清单
+
+比赛或录制前可按 [演示前检查清单](docs/DEMO_CHECKLIST.md) 逐项确认启动、页面、接口和备用方案。
+
 ## 项目文档
 
 - [分阶段开发日志](docs/DEVELOPMENT_LOG.md)
 - [API 总览](docs/API_OVERVIEW.md)
 - [比赛 Demo 脚本](docs/DEMO_SCRIPT.md)
 - [V0.1 最终验收清单](docs/V0.1_ACCEPTANCE.md)
+- [演示数据说明](docs/DEMO_DATA.md)
+- [演示前检查清单](docs/DEMO_CHECKLIST.md)
