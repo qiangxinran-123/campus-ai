@@ -1,32 +1,32 @@
-# CampusAI Development Log
+# CampusAI 分阶段开发日志
 
-This log records the incremental development of CampusAI V0.1. Each stage was kept small enough to validate with working APIs and tests before moving to the next capability.
+本日志记录 CampusAI V0.1 从最小 FastAPI 后端逐步发展为“资料上传、文本处理、搜索和复习辅助”原型的过程。每个阶段都以可运行接口和可验证结果为边界，便于比赛评审了解项目如何持续迭代。
 
-| Stage | Goal | Completed Work | Acceptance | Project Value |
+| 阶段 | 阶段目标 | 完成内容 | 验收方式 | 项目价值 |
 | --- | --- | --- | --- | --- |
-| 1 | FastAPI minimum backend | Created the FastAPI application entry point and a simple greeting endpoint. | Service can start and answer a basic request. | Established an executable backend baseline. |
-| 2 | Backend foundation | Added application configuration, router aggregation, health check, and project-status endpoints. | Health endpoint confirms service availability. | Created a maintainable application skeleton. |
-| 3 | Mock course/material APIs | Added in-memory-style course and material listing routes backed by sample data. | Course and material lists can be requested over HTTP. | Proved the primary learning-material domain flow. |
-| 4 | Pydantic models | Introduced typed course and material request/response schemas. | FastAPI validates and documents API payloads. | Improved API consistency and future maintainability. |
-| 5 | Material creation | Added the course material creation endpoint. | A material can be created for an existing course; missing courses return 404. | Completed the first material-management write flow. |
-| 6/7 | JSON read and persistence | Moved course/material data to `courses.json` and added atomic JSON write-back. | New materials remain available after service restart. | Replaced temporary state with a lightweight persistent store. |
-| 8 | File upload | Added multipart upload for common course-material formats and local upload storage. | Uploaded files and material metadata are persisted. | Connected real learning files to the material domain. |
-| 9 | Text extraction | Added `.txt` and `.md` extraction with preview, length, and extraction status fields. | Uploaded text files expose extracted metadata after restart. | Prepared materials for downstream AI-assisted workflows. |
-| 10 | Mock AI summary | Added a local summary service and `POST /api/materials/{material_id}/summary`. | Summaries persist; no-text and unknown-material cases are handled. | Demonstrated an AI service boundary without API keys or cost. |
-| 11 | Material search | Added keyword search across metadata, extracted text, and mock summaries with course filtering. | Search returns correct matches, empty results, and parameter errors. | Made growing material collections discoverable. |
-| 12 | Study-card generation | Added local mock review-card generation and persistent cards per material. | Repeated generation replaces cards instead of appending duplicates. | Turned stored materials into a concrete review aid. |
-| 13 | Documentation and demo materials | Added project overview, API reference, development log, and presentation script. | Documentation matches the tested V0.1 API surface. | Makes the project easier to assess, demonstrate, and continue. |
-| 14 | Final acceptance and release preparation | Checked repository hygiene, expanded ignore rules, verified documentation, and recorded the release checklist. | Full test suite passes and the release tree contains no tracked runtime artifacts. | Makes V0.1 ready for review, demonstration, and handoff. |
+| 阶段 1 | FastAPI 最小后端 | 创建 FastAPI 应用入口和基础问候接口。 | 启动服务后可以访问基础接口。 | 建立可运行的后端起点。 |
+| 阶段 2 | 后端基础结构 | 增加配置、路由聚合、健康检查和项目状态接口。 | `GET /health` 返回服务正常状态。 | 形成清晰的应用骨架。 |
+| 阶段 3 | 课程资料模拟接口 | 增加课程列表、课程详情和资料列表接口，并使用示例数据。 | 通过 HTTP 获取课程和资料列表。 | 验证学习资料管理的核心领域流程。 |
+| 阶段 4 | Pydantic 数据模型 | 使用 Pydantic 定义课程、资料和响应模型。 | FastAPI 自动校验请求并生成 API 文档。 | 提升接口一致性和可维护性。 |
+| 阶段 5 | 新增资料接口 | 增加为指定课程创建 JSON 资料的接口。 | 成功创建资料；课程不存在时返回 `404`。 | 完成第一条资料写入流程。 |
+| 阶段 6/7 | JSON 读取与持久化写回 | 将课程和资料迁移到 `courses.json`，新增安全写回逻辑。 | 新增资料后重启服务，资料仍然存在。 | 从临时状态升级为轻量持久化存储。 |
+| 阶段 8 | 文件上传接口 | 支持常见课程资料格式上传，按课程保存到本地目录。 | 上传文件和资料元数据均能保存。 | 将真实学习文件接入资料管理流程。 |
+| 阶段 9 | 资料文本提取 | 对 `.txt`、`.md` 提取正文，保存预览、字符数和状态。 | 上传文本文件后 GET 接口可读到提取字段。 | 为后续 AI 处理准备结构化文本。 |
+| 阶段 10 | mock AI 摘要 | 增加本地 mock 摘要服务和 `POST /api/materials/{material_id}/summary`。 | 有文本时生成摘要并持久化；无文本和未知资料返回明确错误。 | 在不依赖 API Key 的情况下演示 AI 服务边界。 |
+| 阶段 11 | 资料搜索 | 支持按标题、摘要、文件名、提取文本和 mock 摘要搜索，并支持课程过滤。 | 验证大小写不敏感匹配、空结果和参数错误。 | 让资料数量增长后仍然容易查找。 |
+| 阶段 12 | 学习复习卡片生成 | 增加本地 mock card generator，生成并保存复习卡片。 | 生成 3 张卡片；重复生成覆盖旧卡片而不重复追加。 | 将资料内容转化为可复习的学习产物。 |
+| 阶段 13 | 项目文档与比赛材料 | 完善 README、API 总览、开发日志和 Demo 讲稿。 | 文档与已测试 API 能力一致。 | 便于比赛评审、现场演示和简历展示。 |
+| 阶段 14 | 最终验收与发布准备 | 检查仓库卫生、补充 `.gitignore`、核对文档并记录验收清单。 | 测试通过，仓库不包含运行时缓存和真实上传文件。 | 将 V0.1 整理为可交付、可展示的版本。 |
 
-## Verification Practice
+## 验收方式说明
 
-The API test suite launches Uvicorn against a temporary JSON data file and temporary upload directory. This keeps tests independent from `backend/app/data/courses.json` while validating HTTP behavior, persistence, and service restart behavior.
+测试使用临时 JSON 数据文件和临时上传目录启动真实 Uvicorn 服务，再通过 HTTP 请求验证公开 API。这种方式既验证接口行为，也验证持久化和服务重启场景，不会污染 `backend/app/data/courses.json`。
 
 ```bash
 wsl -d Ubuntu --cd /home/qxrrr/projects/campus-ai \
 .venv/bin/python -m unittest backend.tests.test_courses_api
 ```
 
-## Version Positioning
+## 版本定位
 
-CampusAI V0.1 is a backend-oriented prototype. Its local mock summary and card services are intentionally transparent placeholders for future real LLM and RAG integration.
+CampusAI V0.1 是后端导向的比赛原型。当前摘要和学习卡片属于透明、可测试的本地 mock AI 能力，后续将演进为真实 LLM、RAG 和向量数据库方案。

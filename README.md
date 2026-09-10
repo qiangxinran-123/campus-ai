@@ -1,76 +1,85 @@
 # CampusAI
 
-CampusAI V0.1 is an AI-assisted learning-material management and review platform for university students. It focuses on a small, demonstrable backend loop: organize course materials, upload learning files, extract text from supported files, generate local mock summaries and review cards, and search across material content.
+CampusAI 是一个面向大学生的 AI 学习资料管理与复习辅助平台。项目围绕“课程资料上传、文本提取、摘要生成、资料搜索和复习卡片生成”构建了一条完整、可测试的后端流程。
 
-> Current implementation note: the AI summary and study-card features are deterministic local mock services. CampusAI V0.1 does not call an external LLM API and does not claim real LLM integration.
+CampusAI is a FastAPI-based AI study assistant for university students, focused on organizing learning materials and turning them into searchable summaries and review cards.
 
-## Current Status
+> 重要说明：当前 V0.1 使用本地规则实现的 mock AI 摘要和 mock 学习卡片生成，不调用真实外部大模型 API，也不依赖 API Key。
 
-- Version: `V0.1`
-- Current progress: `100%` for the V0.1 release scope
-- Backend: FastAPI
-- Storage: local JSON file
-- Verification: `unittest` integration tests that start the API and exercise real HTTP requests
+## 项目状态
 
-## Technology Stack
+- 当前版本：`V0.1`
+- 当前进度：V0.1 发布范围已完成
+- 项目定位：面向大学生的 AI 学习资料管理与复习辅助平台
+- 后端框架：FastAPI
+- 数据存储：本地 JSON 文件
+- 测试方式：基于真实 HTTP 请求的 `unittest` 集成测试
+
+推荐 GitHub 仓库描述：
+
+```text
+CampusAI：面向大学生的 AI 学习资料管理与复习辅助平台 | FastAPI-based AI study assistant for students
+```
+
+## 技术栈
 
 - Python 3
-- FastAPI and Uvicorn
+- FastAPI、Uvicorn
 - Pydantic
-- `python-multipart` for file upload
-- Local JSON persistence
-- Standard-library `unittest`
+- `python-multipart` 文件上传
+- 本地 JSON 持久化
+- Python 标准库 `unittest`
 
-## Core Features
+## 核心功能
 
-- Course listing and course-detail APIs
-- Course material listing and JSON material creation
-- File upload for `.pdf`, `.ppt`, `.pptx`, `.doc`, `.docx`, `.txt`, and `.md`
-- Local file storage under `backend/app/uploads/course_{course_id}/`
-- Text extraction for `.txt` and `.md`
-- Mock AI summary generation with persisted results
-- Keyword search across material metadata, extracted text, and mock summaries
-- Mock study-card generation with persisted review cards
-- JSON write-back that survives service restarts
+- 课程列表和课程详情查询
+- 课程资料列表和 JSON 资料创建
+- 上传 `.pdf`、`.ppt`、`.pptx`、`.doc`、`.docx`、`.txt`、`.md` 文件
+- 按课程保存上传文件到 `backend/app/uploads/course_{course_id}/`
+- 自动提取 `.txt`、`.md` 文本，保存 `text_preview`、`text_length`、`extracted`
+- 生成并持久化 mock AI 摘要
+- 按标题、文件名、资料摘要、提取文本和 AI 摘要搜索资料
+- 生成并持久化学习复习卡片
+- 新增资料和处理结果写回 JSON，服务重启后仍然保留
 
-## API Overview
+## API 概览
 
-| Area | Representative API | Purpose |
+| 功能 | API | 说明 |
 | --- | --- | --- |
-| Health | `GET /health` | Check API availability |
-| Courses | `GET /api/courses` | List courses |
-| Materials | `GET /api/courses/{course_id}/materials` | List materials for a course |
-| Upload | `POST /api/courses/{course_id}/materials/upload` | Upload a course material |
-| Summary | `POST /api/materials/{material_id}/summary` | Generate a local mock summary |
-| Search | `GET /api/materials/search?q={keyword}&course_id={optional}` | Search materials without changing data |
-| Cards | `POST /api/materials/{material_id}/cards` | Generate local mock review cards |
+| 健康检查 | `GET /health` | 检查后端是否正常运行 |
+| 课程列表 | `GET /api/courses` | 获取全部课程 |
+| 课程资料 | `GET /api/courses/{course_id}/materials` | 获取指定课程的资料 |
+| 文件上传 | `POST /api/courses/{course_id}/materials/upload` | 上传并登记课程资料 |
+| mock 摘要 | `POST /api/materials/{material_id}/summary` | 生成并保存本地 mock 摘要 |
+| 资料搜索 | `GET /api/materials/search?q={keyword}&course_id={optional}` | 搜索资料，不修改 JSON |
+| 学习卡片 | `POST /api/materials/{material_id}/cards` | 生成并保存 mock 复习卡片 |
 
-See [API overview](docs/API_OVERVIEW.md) for the full endpoint list and response behavior.
+完整接口说明见 [API 总览](docs/API_OVERVIEW.md)。
 
-## Project Structure
+## 项目结构
 
 ```text
 campus-ai/
 ├── backend/
-│   ├── main.py                     # FastAPI application entry point
+│   ├── main.py                     # FastAPI 应用入口
 │   ├── app/
-│   │   ├── api/                    # Course and material routes
-│   │   ├── schemas/                # Pydantic request and response models
-│   │   ├── services/               # Persistence, extraction, summary, and card services
-│   │   ├── data/courses.json       # Default local course and material data
-│   │   └── uploads/                # Uploaded material files at runtime
-│   └── tests/test_courses_api.py   # HTTP integration tests
+│   │   ├── api/                    # 课程、资料和处理接口
+│   │   ├── schemas/                # Pydantic 请求与响应模型
+│   │   ├── services/               # 持久化、提取、摘要和卡片服务
+│   │   ├── data/courses.json       # 默认示例课程与资料数据
+│   │   └── uploads/                # 运行时上传目录，不提交真实用户文件
+│   └── tests/test_courses_api.py   # HTTP 集成测试
 ├── docs/
-│   ├── API_OVERVIEW.md
-│   ├── DEMO_SCRIPT.md
-│   ├── DEVELOPMENT_LOG.md
-│   └── V0.1_ACCEPTANCE.md
+│   ├── API_OVERVIEW.md             # API 中文总览
+│   ├── DEMO_SCRIPT.md              # 比赛演示讲稿
+│   ├── DEVELOPMENT_LOG.md          # 分阶段开发日志
+│   └── V0.1_ACCEPTANCE.md          # V0.1 最终验收清单
 └── requirements.txt
 ```
 
-## Local Run
+## 本地运行
 
-From the project root in WSL or a Linux shell:
+在项目根目录执行：
 
 ```bash
 python3 -m venv .venv
@@ -79,54 +88,56 @@ pip install -r requirements.txt
 uvicorn backend.main:app --reload
 ```
 
-Open the interactive API documentation at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+启动后打开 FastAPI 交互式文档：
 
-The default data file is `backend/app/data/courses.json`. The following environment variables keep tests and local experiments isolated:
+[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+默认数据文件为 `backend/app/data/courses.json`。测试或本地隔离运行时，可以通过环境变量切换数据文件和上传目录：
 
 ```bash
 CAMPUSAI_COURSE_DATA_FILE=/path/to/courses.json
 CAMPUSAI_UPLOAD_DIR=/path/to/uploads
 ```
 
-## Run Tests
+## 运行测试
 
 ```bash
 wsl -d Ubuntu --cd /home/qxrrr/projects/campus-ai \
 .venv/bin/python -m unittest backend.tests.test_courses_api
 ```
 
-The suite covers course/material APIs, JSON persistence, file upload, text extraction, mock summary generation, search, and study-card generation.
+测试覆盖课程与资料接口、JSON 持久化、文件上传、文本提取、mock 摘要、资料搜索和学习卡片生成。
 
-## Mock AI Capabilities
+## 当前 mock AI 能力
 
-CampusAI V0.1 uses local rule-based services so that the project can be demonstrated without API keys, network access, or cost:
+当前阶段不接入真实外部大模型，所有 AI 相关能力都使用本地规则服务完成：
 
-- Mock summaries prefer extracted text and produce a short fixed-prefix summary.
-- Mock cards prefer `ai_summary`, then `text_preview`, then the material `summary`.
-- Repeated summary or card requests update the existing material record instead of creating duplicate materials.
+- mock 摘要根据已提取文本生成简短摘要，并保存 `ai_summary`、`summary_method`、`summary_updated_at`。
+- mock 卡片优先使用 `ai_summary`，其次使用 `text_preview`，最后使用资料原始 `summary`。
+- 重复生成摘要或卡片时更新原资料，不创建重复资料。
+- 摘要和卡片服务位于 `backend/app/services/`，后续可以在不改变 API 的情况下替换为真实 LLM 服务。
 
-These services are isolated under `backend/app/services/`, leaving a clear replacement point for a future LLM provider.
+## 比赛展示亮点
 
-## Competition Highlights
+- 从课程资料上传到复习卡片生成，形成完整后端闭环
+- 数据写回 JSON，服务重启后仍然可读
+- 服务层职责清晰，便于后续接入真实 AI 能力
+- 使用真实 HTTP 集成测试验证，而不是只验证孤立函数
+- 不依赖 API Key 和外部网络，现场演示稳定、可复现
+- 文档、开发日志和 Demo 脚本完整，适合比赛评审和简历展示
 
-- A complete backend workflow rather than isolated API prototypes
-- Persistent JSON data across service restarts
-- Clear service-layer separation for upload, extraction, summary, search, and cards
-- Testable behavior without external AI credentials
-- A realistic evolution path from local mock AI to LLM and RAG capabilities
+## 后续规划
 
-## Roadmap
+- 接入真实 LLM，替换当前 mock 摘要和卡片服务
+- 增加 Embedding、RAG 检索和向量数据库
+- 支持 PDF、PowerPoint、Word 的正文提取
+- 增加学生端前端页面和课程复习视图
+- 增加用户认证、资料归属和协作能力
+- 将 JSON 存储升级为数据库，并支持异步处理
 
-- Integrate a real LLM provider through the existing service boundary
-- Add RAG retrieval with embeddings and a vector database
-- Support text extraction for PDF, PowerPoint, and Word files
-- Build a student-facing web frontend
-- Add authentication, ownership, and course collaboration features
-- Add asynchronous processing and richer evaluation metrics
+## 项目文档
 
-## Supporting Documents
-
-- [Development log](docs/DEVELOPMENT_LOG.md)
-- [API overview](docs/API_OVERVIEW.md)
-- [Competition demo script](docs/DEMO_SCRIPT.md)
-- [V0.1 acceptance checklist](docs/V0.1_ACCEPTANCE.md)
+- [分阶段开发日志](docs/DEVELOPMENT_LOG.md)
+- [API 总览](docs/API_OVERVIEW.md)
+- [比赛 Demo 脚本](docs/DEMO_SCRIPT.md)
+- [V0.1 最终验收清单](docs/V0.1_ACCEPTANCE.md)
